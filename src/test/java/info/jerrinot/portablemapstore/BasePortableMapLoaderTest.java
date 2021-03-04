@@ -45,15 +45,4 @@ public class BasePortableMapLoaderTest {
         props.setProperty("COLUMN:double=FIELD:doubleField", "");
         return props;
     }
-
-    @NotNull
-    public static ClassDefinition createClassDefinition() {
-        return new ClassDefinitionBuilder(1, 1)
-                .addIntField("id")
-                .addUTFField("name")
-                .addUTFField("lastname")
-                .addDoubleField("doubleField")
-                .addBooleanField("boolean")
-                .build();
-    }
 }

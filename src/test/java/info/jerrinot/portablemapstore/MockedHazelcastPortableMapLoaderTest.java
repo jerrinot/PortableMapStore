@@ -3,6 +3,7 @@ package info.jerrinot.portablemapstore;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.nio.serialization.ClassDefinition;
+import com.hazelcast.nio.serialization.ClassDefinitionBuilder;
 import com.hazelcast.nio.serialization.GenericRecord;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -68,5 +69,16 @@ public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderT
         when(instance.getConfig()).thenReturn(config);
         mapLoader.init(instance, props, "map");
         return mapLoader;
+    }
+
+    @NotNull
+    public static ClassDefinition createClassDefinition() {
+        return new ClassDefinitionBuilder(1, 1)
+                .addIntField("id")
+                .addUTFField("name")
+                .addUTFField("lastname")
+                .addDoubleField("doubleField")
+                .addBooleanField("boolean")
+                .build();
     }
 }
