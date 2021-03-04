@@ -6,6 +6,7 @@ import com.hazelcast.map.MapLoader;
 import com.hazelcast.map.MapLoaderLifecycleSupport;
 import com.hazelcast.nio.serialization.GenericRecord;
 import info.jerrinot.portablemapstore.impl.ColumnFieldMappings;
+import info.jerrinot.portablemapstore.impl.StaticColumnFieldMappings;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToSingleObjectOrNull;
 import info.jerrinot.portablemapstore.impl.resolver.ChainingClassDefinitionResolver;
 import info.jerrinot.portablemapstore.impl.SimpleConnectionProvider;
@@ -68,7 +69,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         var classId = Integer.parseInt(properties.getProperty("classId"));
         var definitions = hazelcastInstance.getConfig().getSerializationConfig().getClassDefinitions();
         var staticResolver = new StaticClassDefinitionResolver(definitions);
-        var mappings = new ColumnFieldMappings();
+        ColumnFieldMappings mappings = createMappings(properties);
         var inference = new TableInferenceResolver(dbAccess, mappings);
         var cdSelector = new ChainingClassDefinitionResolver(staticResolver, inference);
         var cd = cdSelector.resolve(factoryId, classId, tableName);
@@ -76,6 +77,32 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         resultSetToPortable = new ResultSetToSingleObjectOrNull<>(rowToPortable);
         resultSetToEntries = new ResultSetToEntryMap<>(resultSet -> resultSet.getObject(keyColumnName), rowToPortable);
         resultSetToKeys = new ResultSetToObjectList<>(resultSet -> resultSet.getObject(keyColumnName));
+    }
+
+
+    // TODO: Extra into its own parser
+    private ColumnFieldMappings createMappings(Properties props) {
+        // COLUMN:NAME=FIELD:NAME
+        StaticColumnFieldMappings.Builder builder = ColumnFieldMappings.newBuilder();
+        for (var entry : props.entrySet()) {
+            String key = (String) entry.getKey();
+            if (!key.startsWith("COLUMN:")) {
+                continue;
+            }
+            String withoutPrefix = key.substring("COLUMN:".length());
+            String[] split = withoutPrefix.split("=");
+            if (split.length != 2) {
+                continue;
+            }
+            String fieldNameWithPrefix = split[1];
+            if (!fieldNameWithPrefix.startsWith("FIELD:")) {
+                continue;
+            }
+            String fieldName = fieldNameWithPrefix.substring("FIELD:".length());
+            String columnName = split[0];
+            builder.mapColumnToField(columnName, fieldName);
+        }
+        return builder.build();
     }
 
     private static String placeHolders(int length) {

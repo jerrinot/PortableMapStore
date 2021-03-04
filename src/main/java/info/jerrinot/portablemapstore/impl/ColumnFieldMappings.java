@@ -1,11 +1,27 @@
 package info.jerrinot.portablemapstore.impl;
 
-public final class ColumnFieldMappings {
-    public String fieldToColumn(String fieldName) {
-        return fieldName;
+public interface ColumnFieldMappings {
+    ColumnFieldMappings IDENTITY_MAPPING = new ColumnFieldMappings() {
+        @Override
+        public String fieldToColumn(String fieldName) {
+            return fieldName;
+        }
+
+        @Override
+        public String columnToField(String columnName) {
+            return columnName;
+        }
+    };
+
+    String fieldToColumn(String fieldName);
+
+    String columnToField(String columnName);
+
+    static StaticColumnFieldMappings.Builder newBuilder() {
+        return new StaticColumnFieldMappings.Builder();
     }
 
-    public String columnToField(String columnName) {
-        return columnName;
+    static ColumnFieldMappings identity() {
+        return IDENTITY_MAPPING;
     }
 }

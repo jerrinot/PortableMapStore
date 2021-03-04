@@ -3,8 +3,8 @@ package info.jerrinot.portablemapstore.impl.resolver;
 import com.hazelcast.function.FunctionEx;
 import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.ClassDefinitionBuilder;
-import info.jerrinot.portablemapstore.impl.ColumnFieldMappings;
 import info.jerrinot.portablemapstore.impl.DbAccess;
+import info.jerrinot.portablemapstore.impl.ColumnFieldMappings;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

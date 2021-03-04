@@ -68,7 +68,7 @@ public class Person implements Portable {
         w.writeInt("id", id);
         w.writeUTF("name", name);
         w.writeUTF("lastname", lastname);
-        w.writeDouble("double", doubleField);
+        w.writeDouble("doubleField", doubleField);
         w.writeBoolean("boolean", booleanField);
     }
 
@@ -77,7 +77,7 @@ public class Person implements Portable {
         id = r.readInt("id");
         name = r.readUTF("name");
         lastname = r.readUTF("lastname");
-        doubleField = r.readDouble("double");
+        doubleField = r.readDouble("doubleField");
         booleanField = r.readBoolean("boolean");
     }
 }

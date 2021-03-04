@@ -42,6 +42,7 @@ public class BasePortableMapLoaderTest {
         props.setProperty("password", postgres.getPassword());
         props.setProperty("factoryId", "1");
         props.setProperty("classId", "1");
+        props.setProperty("COLUMN:double=FIELD:doubleField", "");
         return props;
     }
 
@@ -51,7 +52,7 @@ public class BasePortableMapLoaderTest {
                 .addIntField("id")
                 .addUTFField("name")
                 .addUTFField("lastname")
-                .addDoubleField("double")
+                .addDoubleField("doubleField")
                 .addBooleanField("boolean")
                 .build();
     }
