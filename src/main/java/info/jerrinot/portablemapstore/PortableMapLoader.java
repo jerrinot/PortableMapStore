@@ -4,21 +4,21 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.function.FunctionEx;
 import com.hazelcast.map.MapLoader;
 import com.hazelcast.map.MapLoaderLifecycleSupport;
-import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.GenericRecord;
-import info.jerrinot.portablemapstore.impl.ClassDefinitionResolver;
+import info.jerrinot.portablemapstore.impl.resolver.ChainingClassDefinitionResolver;
 import info.jerrinot.portablemapstore.impl.SimpleConnectionProvider;
 import info.jerrinot.portablemapstore.impl.JdbcTemplate;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToEntryMap;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToObjectList;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToPortable;
+import info.jerrinot.portablemapstore.impl.resolver.StaticClassDefinitionResolver;
+import info.jerrinot.portablemapstore.impl.resolver.TableInferenceResolver;
 
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 public final class PortableMapLoader implements MapLoader<Object, GenericRecord>, MapLoaderLifecycleSupport {
@@ -39,6 +39,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
     public Map<Object, GenericRecord> loadAll(Collection keys) {
         //todo: limit max size of the collection, do chunking?
         String sql = String.format(findByKeysQuery, placeHolders(keys.size()));
+        // this replace the (%s) in the original query with (?, ?, ?, ? ... ?) for each key
         return jdbcTemplate.query(resultSetToEntries, sql, keys);
     }
 
@@ -64,7 +65,9 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         var factoryId = Integer.parseInt(properties.getProperty("factoryId"));
         var classId = Integer.parseInt(properties.getProperty("classId"));
         var definitions = hazelcastInstance.getConfig().getSerializationConfig().getClassDefinitions();
-        var cdSelector = new ClassDefinitionResolver(definitions, jdbcTemplate);
+        var staticResolver = new StaticClassDefinitionResolver(definitions);
+        var inference = new TableInferenceResolver(jdbcTemplate);
+        var cdSelector = new ChainingClassDefinitionResolver(staticResolver, inference);
         rowToPortable = new ResultSetToPortable(cdSelector.resolve(factoryId, classId, tableName));
         resultSetToEntries = new ResultSetToEntryMap<>(resultSet -> resultSet.getObject(keyColumnName), rowToPortable);
         resultSetToKeys = new ResultSetToObjectList<>(resultSet -> resultSet.getObject(keyColumnName));
