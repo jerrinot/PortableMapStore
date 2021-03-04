@@ -2,7 +2,6 @@ package info.jerrinot.portablemapstore.impl;
 
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.function.FunctionEx;
-import com.hazelcast.nio.serialization.GenericRecord;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,7 +15,7 @@ public final class JdbcTemplate {
         this.connectionProvider = connectionProvider;
     }
 
-    public GenericRecord findOneOrNull(FunctionEx<ResultSet, GenericRecord> mapper, String sql, Object parameter) {
+    public <T> T findOneOrNull(FunctionEx<ResultSet, T> rowMapper, String sql, Object parameter) {
         try (Connection conn = connectionProvider.getConnection()) {
             try (var stmt = conn.prepareStatement(sql)) {
                 if (parameter != null) {
@@ -26,7 +25,7 @@ public final class JdbcTemplate {
                     if (!rs.next()) {
                         return null;
                     }
-                    return mapper.apply(rs);
+                    return rowMapper.apply(rs);
                 }
             }
         } catch (SQLException e) {
@@ -34,7 +33,22 @@ public final class JdbcTemplate {
         }
     }
 
-    public <T> T query(FunctionEx<ResultSet, T> mapper, String sql, Collection params) {
+    public <T> T mapAll(FunctionEx<ResultSet, T> resultSetMapper, String sql, Object parameter) {
+        try (Connection conn = connectionProvider.getConnection()) {
+            try (var stmt = conn.prepareStatement(sql)) {
+                if (parameter != null) {
+                    stmt.setObject(1, parameter);
+                }
+                try (var rs = stmt.executeQuery()) {
+                    return resultSetMapper.apply(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new HazelcastException(e);
+        }
+    }
+
+    public <T> T query(FunctionEx<ResultSet, T> resultSetMapper, String sql, Collection params) {
         try (Connection conn = connectionProvider.getConnection()) {
             try (var stmt = conn.prepareStatement(sql)) {
                 {
@@ -45,7 +59,7 @@ public final class JdbcTemplate {
                     }
                 }
                 try (ResultSet rs = stmt.executeQuery()) {
-                    return mapper.apply(rs);
+                    return resultSetMapper.apply(rs);
                 }
             }
         } catch (SQLException e) {

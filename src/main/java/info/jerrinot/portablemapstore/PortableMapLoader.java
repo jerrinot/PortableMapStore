@@ -1,12 +1,12 @@
 package info.jerrinot.portablemapstore;
 
-import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.function.FunctionEx;
 import com.hazelcast.map.MapLoader;
 import com.hazelcast.map.MapLoaderLifecycleSupport;
 import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.GenericRecord;
+import info.jerrinot.portablemapstore.impl.ClassDefinitionResolver;
 import info.jerrinot.portablemapstore.impl.SimpleConnectionProvider;
 import info.jerrinot.portablemapstore.impl.JdbcTemplate;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToEntryMap;
@@ -64,12 +64,8 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         var factoryId = Integer.parseInt(properties.getProperty("factoryId"));
         var classId = Integer.parseInt(properties.getProperty("classId"));
         var definitions = hazelcastInstance.getConfig().getSerializationConfig().getClassDefinitions();
-        Optional<ClassDefinition> def = definitions
-                .stream()
-                .filter(cd -> cd.getFactoryId() == factoryId && cd.getClassId() == classId)
-                .findFirst();
-        // todo: when ClassDefinition not found try to infer from a table / static configuration?
-        rowToPortable = new ResultSetToPortable(def.orElseThrow(() -> new HazelcastException("class definition not found")));
+        var cdSelector = new ClassDefinitionResolver(definitions, jdbcTemplate);
+        rowToPortable = new ResultSetToPortable(cdSelector.resolve(factoryId, classId, tableName));
         resultSetToEntries = new ResultSetToEntryMap<>(resultSet -> resultSet.getObject(keyColumnName), rowToPortable);
         resultSetToKeys = new ResultSetToObjectList<>(resultSet -> resultSet.getObject(keyColumnName));
     }
