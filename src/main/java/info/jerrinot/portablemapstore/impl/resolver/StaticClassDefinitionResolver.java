@@ -4,7 +4,7 @@ import com.hazelcast.nio.serialization.ClassDefinition;
 
 import java.util.Set;
 
-public class StaticClassDefinitionResolver implements ClassDefinitionResolver {
+public final class StaticClassDefinitionResolver implements ClassDefinitionResolver {
     private final Set<ClassDefinition> staticDefinitions;
 
     public StaticClassDefinitionResolver(Set<ClassDefinition> staticDefinitions) {

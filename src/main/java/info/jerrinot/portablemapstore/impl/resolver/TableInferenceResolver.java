@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-public class TableInferenceResolver implements ClassDefinitionResolver {
+public final class TableInferenceResolver implements ClassDefinitionResolver {
     private final DbAccess dbAccess;
     private final ColumnFieldMappings mappings;
 
