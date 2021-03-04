@@ -6,34 +6,19 @@ import com.hazelcast.function.FunctionEx;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 
-public final class JdbcTemplate {
+public final class DbAccess {
     private final ConnectionProvider connectionProvider;
 
-    public JdbcTemplate(ConnectionProvider connectionProvider) {
+    public DbAccess(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }
 
-    public <T> T findOneOrNull(FunctionEx<ResultSet, T> rowMapper, String sql, Object parameter) {
-        try (Connection conn = connectionProvider.getConnection()) {
-            try (var stmt = conn.prepareStatement(sql)) {
-                if (parameter != null) {
-                    stmt.setObject(1, parameter);
-                }
-                try (var rs = stmt.executeQuery()) {
-                    if (!rs.next()) {
-                        return null;
-                    }
-                    return rowMapper.apply(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new HazelcastException(e);
-        }
+    public <T> T query(String sql, FunctionEx<ResultSet, T> resultSetMapper) {
+        return query(sql, null, resultSetMapper);
     }
 
-    public <T> T mapAll(FunctionEx<ResultSet, T> resultSetMapper, String sql, Object parameter) {
+    public <T> T query(String sql, Object parameter, FunctionEx<ResultSet, T> resultSetMapper) {
         try (Connection conn = connectionProvider.getConnection()) {
             try (var stmt = conn.prepareStatement(sql)) {
                 if (parameter != null) {
@@ -48,7 +33,7 @@ public final class JdbcTemplate {
         }
     }
 
-    public <T> T query(FunctionEx<ResultSet, T> resultSetMapper, String sql, Collection params) {
+    public <T> T query(String sql, FunctionEx<ResultSet, T> resultSetMapper, Object... params) {
         try (Connection conn = connectionProvider.getConnection()) {
             try (var stmt = conn.prepareStatement(sql)) {
                 {

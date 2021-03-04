@@ -3,16 +3,16 @@ package info.jerrinot.portablemapstore.impl.resolver;
 import com.hazelcast.function.FunctionEx;
 import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.ClassDefinitionBuilder;
-import info.jerrinot.portablemapstore.impl.JdbcTemplate;
+import info.jerrinot.portablemapstore.impl.DbAccess;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
 public class TableInferenceResolver implements ClassDefinitionResolver {
-    private final JdbcTemplate jdbcTemplate;
+    private final DbAccess dbAccess;
 
-    public TableInferenceResolver(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TableInferenceResolver(DbAccess dbAccess) {
+        this.dbAccess = dbAccess;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class TableInferenceResolver implements ClassDefinitionResolver {
             }
             return cdBuilder.build();
         };
-        return jdbcTemplate.mapAll(mapper, sql, null);
+        return dbAccess.query(sql, mapper);
     }
 
     private enum PortableType {
@@ -55,6 +55,5 @@ public class TableInferenceResolver implements ClassDefinitionResolver {
             }
             return UNKNOWN;
         }
-
     }
 }

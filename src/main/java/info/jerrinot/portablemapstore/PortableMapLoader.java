@@ -5,12 +5,13 @@ import com.hazelcast.function.FunctionEx;
 import com.hazelcast.map.MapLoader;
 import com.hazelcast.map.MapLoaderLifecycleSupport;
 import com.hazelcast.nio.serialization.GenericRecord;
+import info.jerrinot.portablemapstore.impl.mapper.ResultSetToSingleObjectOrNull;
 import info.jerrinot.portablemapstore.impl.resolver.ChainingClassDefinitionResolver;
 import info.jerrinot.portablemapstore.impl.SimpleConnectionProvider;
-import info.jerrinot.portablemapstore.impl.JdbcTemplate;
+import info.jerrinot.portablemapstore.impl.DbAccess;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToEntryMap;
 import info.jerrinot.portablemapstore.impl.mapper.ResultSetToObjectList;
-import info.jerrinot.portablemapstore.impl.mapper.ResultSetToPortable;
+import info.jerrinot.portablemapstore.impl.mapper.RowToPortable;
 import info.jerrinot.portablemapstore.impl.resolver.StaticClassDefinitionResolver;
 import info.jerrinot.portablemapstore.impl.resolver.TableInferenceResolver;
 
@@ -22,8 +23,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public final class PortableMapLoader implements MapLoader<Object, GenericRecord>, MapLoaderLifecycleSupport {
-    private JdbcTemplate jdbcTemplate;
-    private FunctionEx<ResultSet, GenericRecord> rowToPortable;
+    private DbAccess dbAccess;
+    private FunctionEx<ResultSet, GenericRecord> resultSetToPortable;
     private FunctionEx<ResultSet, Map<Object, GenericRecord>> resultSetToEntries;
     private FunctionEx<ResultSet, List<Object>> resultSetToKeys;
     private String findByKeyQuery;
@@ -32,7 +33,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
 
     @Override
     public GenericRecord load(Object key) {
-        return jdbcTemplate.findOneOrNull(rowToPortable, findByKeyQuery, key);
+        return dbAccess.query(findByKeyQuery, key, resultSetToPortable);
     }
 
     @Override
@@ -40,12 +41,12 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         //todo: limit max size of the collection, do chunking?
         String sql = String.format(findByKeysQuery, placeHolders(keys.size()));
         // this replace the (%s) in the original query with (?, ?, ?, ? ... ?) for each key
-        return jdbcTemplate.query(resultSetToEntries, sql, keys);
+        return dbAccess.query(sql, resultSetToEntries, keys.toArray());
     }
 
     @Override
     public Iterable<Object> loadAllKeys() {
-        return jdbcTemplate.query(resultSetToKeys, findAllKeysQuery, Collections.EMPTY_LIST);
+        return dbAccess.query(findAllKeysQuery, resultSetToKeys);
     }
 
     @Override
@@ -60,15 +61,16 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         String username = properties.getProperty("username");
         String password = properties.getProperty("password");
         var connectionProvider = new SimpleConnectionProvider(url, username, password);
-        jdbcTemplate = new JdbcTemplate(connectionProvider);
+        dbAccess = new DbAccess(connectionProvider);
 
         var factoryId = Integer.parseInt(properties.getProperty("factoryId"));
         var classId = Integer.parseInt(properties.getProperty("classId"));
         var definitions = hazelcastInstance.getConfig().getSerializationConfig().getClassDefinitions();
         var staticResolver = new StaticClassDefinitionResolver(definitions);
-        var inference = new TableInferenceResolver(jdbcTemplate);
+        var inference = new TableInferenceResolver(dbAccess);
         var cdSelector = new ChainingClassDefinitionResolver(staticResolver, inference);
-        rowToPortable = new ResultSetToPortable(cdSelector.resolve(factoryId, classId, tableName));
+        var rowToPortable = new RowToPortable(cdSelector.resolve(factoryId, classId, tableName));
+        resultSetToPortable = new ResultSetToSingleObjectOrNull<>(rowToPortable);
         resultSetToEntries = new ResultSetToEntryMap<>(resultSet -> resultSet.getObject(keyColumnName), rowToPortable);
         resultSetToKeys = new ResultSetToObjectList<>(resultSet -> resultSet.getObject(keyColumnName));
     }

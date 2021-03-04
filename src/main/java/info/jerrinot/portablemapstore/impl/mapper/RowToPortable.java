@@ -8,10 +8,10 @@ import com.hazelcast.nio.serialization.GenericRecord;
 
 import java.sql.ResultSet;
 
-public final class ResultSetToPortable implements FunctionEx<ResultSet, GenericRecord> {
+public final class RowToPortable implements FunctionEx<ResultSet, GenericRecord> {
     private final ClassDefinition classDefinition;
 
-    public ResultSetToPortable(ClassDefinition classDefinition) {
+    public RowToPortable(ClassDefinition classDefinition) {
         this.classDefinition = classDefinition;
     }
 
