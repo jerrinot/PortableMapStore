@@ -1,7 +1,8 @@
-package info.jerrinot.portablemapstore.impl;
+package info.jerrinot.portablemapstore.impl.connectivity;
 
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.function.FunctionEx;
+import info.jerrinot.portablemapstore.impl.columnmapping.ConnectionProvider;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

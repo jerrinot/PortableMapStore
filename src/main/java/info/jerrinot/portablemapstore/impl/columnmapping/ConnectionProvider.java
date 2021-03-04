@@ -1,4 +1,4 @@
-package info.jerrinot.portablemapstore.impl;
+package info.jerrinot.portablemapstore.impl.columnmapping;
 
 import java.sql.Connection;
 

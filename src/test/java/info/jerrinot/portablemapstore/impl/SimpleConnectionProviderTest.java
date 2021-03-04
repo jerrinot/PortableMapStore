@@ -1,5 +1,6 @@
 package info.jerrinot.portablemapstore.impl;
 
+import info.jerrinot.portablemapstore.impl.connectivity.SimpleConnectionProvider;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgreSQLContainer;

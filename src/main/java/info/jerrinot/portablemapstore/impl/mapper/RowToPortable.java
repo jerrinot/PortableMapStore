@@ -5,7 +5,7 @@ import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.FieldDefinition;
 import com.hazelcast.nio.serialization.FieldType;
 import com.hazelcast.nio.serialization.GenericRecord;
-import info.jerrinot.portablemapstore.impl.ColumnFieldMappings;
+import info.jerrinot.portablemapstore.impl.columnmapping.ColumnFieldMappings;
 
 import java.sql.ResultSet;
 
