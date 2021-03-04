@@ -22,9 +22,7 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
 
     @Before
     public void setup() {
-        var config = new Config();
-//        config.getSerializationConfig().addClassDefinition(createClassDefinition());
-        server = Hazelcast.newHazelcastInstance(config);
+        server = Hazelcast.newHazelcastInstance();
     }
 
     @After
