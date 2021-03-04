@@ -1,4 +1,4 @@
-package info.jerrinot.portablemapstore.impl.mapper;
+package info.jerrinot.portablemapstore.impl.dbmapper;
 
 import com.hazelcast.function.FunctionEx;
 
