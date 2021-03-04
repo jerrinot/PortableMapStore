@@ -27,6 +27,8 @@ public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderT
         assertEquals(0, record.readInt("id"));
         assertEquals("name", record.readUTF("name"));
         assertEquals("lastname", record.readUTF("lastname"));
+        assertEquals(1.5, record.readDouble("double"), 0.1);
+        assertTrue(record.readBoolean("boolean"));
     }
 
     @Test
@@ -40,6 +42,8 @@ public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderT
         assertEquals(0, record.readInt("id"));
         assertEquals("name", record.readUTF("name"));
         assertEquals("lastname", record.readUTF("lastname"));
+        assertEquals(1.5, record.readDouble("double"), 0.1);
+        assertTrue(record.readBoolean("boolean"));
     }
 
     @Test

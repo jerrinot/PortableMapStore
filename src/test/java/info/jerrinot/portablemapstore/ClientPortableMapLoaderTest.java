@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
     private HazelcastInstance server;
@@ -41,6 +42,7 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
         assertEquals(0, record.readInt("id"));
         assertEquals("name", record.readUTF("name"));
         assertEquals("lastname", record.readUTF("lastname"));
+        assertEquals(1.5, record.readDouble("double"), 0.1);
     }
 
     @Test
@@ -55,6 +57,8 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
         assertEquals(0, person.getId());
         assertEquals("name", person.getName());
         assertEquals("lastname", person.getLastname());
+        assertEquals(1.5, person.getDoubleField(), 0.1);
+        assertTrue(person.isBooleanField());
     }
 
     private void configureMap(HazelcastInstance client) {

@@ -10,14 +10,23 @@ public class Person implements Portable {
     private int id;
     private String name;
     private String lastname;
+    private double doubleField;
+    private boolean booleanField;
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastname='" + lastname + '\'' +
-                '}';
+    public double getDoubleField() {
+        return doubleField;
+    }
+
+    public void setDoubleField(double doubleField) {
+        this.doubleField = doubleField;
+    }
+
+    public boolean isBooleanField() {
+        return booleanField;
+    }
+
+    public void setBooleanField(boolean booleanField) {
+        this.booleanField = booleanField;
     }
 
     public int getId() {
@@ -59,6 +68,8 @@ public class Person implements Portable {
         w.writeInt("id", id);
         w.writeUTF("name", name);
         w.writeUTF("lastname", lastname);
+        w.writeDouble("double", doubleField);
+        w.writeBoolean("boolean", booleanField);
     }
 
     @Override
@@ -66,5 +77,7 @@ public class Person implements Portable {
         id = r.readInt("id");
         name = r.readUTF("name");
         lastname = r.readUTF("lastname");
+        doubleField = r.readDouble("double");
+        booleanField = r.readBoolean("boolean");
     }
 }

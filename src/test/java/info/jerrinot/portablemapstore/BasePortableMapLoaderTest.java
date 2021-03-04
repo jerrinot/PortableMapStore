@@ -15,10 +15,12 @@ public class BasePortableMapLoaderTest {
             CREATE TABLE map (
                 id          integer PRIMARY KEY,
                 name        varchar(40) NOT NULL,
-                lastname    varchar(40) NOT NULL
+                lastname    varchar(40) NOT NULL,
+                double      double precision,
+                boolean     boolean
             )""";
 
-    private static final String INSERT_PERSON = "insert into map values (0, 'name', 'lastname');";
+    private static final String INSERT_PERSON = "insert into map values (0, 'name', 'lastname', 1.5, true);";
 
     @ClassRule
     public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:11.1")
@@ -49,6 +51,8 @@ public class BasePortableMapLoaderTest {
                 .addIntField("id")
                 .addUTFField("name")
                 .addUTFField("lastname")
+                .addDoubleField("double")
+                .addBooleanField("boolean")
                 .build();
     }
 }
