@@ -1,8 +1,5 @@
 package info.jerrinot.portablemapstore.impl.columnmapping;
 
-import info.jerrinot.portablemapstore.impl.columnmapping.ColumnFieldMappings;
-import info.jerrinot.portablemapstore.impl.columnmapping.StaticColumnFieldMappings;
-
 import java.util.Properties;
 
 public final class MappingParser {

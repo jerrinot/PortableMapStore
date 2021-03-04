@@ -7,7 +7,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class SimpleConnectionProviderTest {
     @ClassRule

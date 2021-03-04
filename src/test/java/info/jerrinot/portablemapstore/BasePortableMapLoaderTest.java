@@ -1,8 +1,5 @@
 package info.jerrinot.portablemapstore;
 
-import com.hazelcast.nio.serialization.ClassDefinition;
-import com.hazelcast.nio.serialization.ClassDefinitionBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.testcontainers.containers.PostgreSQLContainer;
