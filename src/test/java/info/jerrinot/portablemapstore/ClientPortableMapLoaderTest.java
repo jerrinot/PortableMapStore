@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
     private HazelcastInstance server;
@@ -35,11 +35,15 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
         configureMap(client);
 
         IMap<Integer, GenericRecord> map = client.getMap("map");
-        GenericRecord record = map.get(0);
-        assertEquals(0, record.readInt("id"));
-        assertEquals("name", record.readUTF("name"));
-        assertEquals("lastname", record.readUTF("lastname"));
-        assertEquals(1.5, record.readDouble("doubleField"), 0.1);
+        for (int i = 0; i < ROW_COUNT; i++) {
+            GenericRecord record = map.get(i);
+            assertEquals(i, record.readInt("id"));
+            assertEquals("name" + i, record.readUTF("name"));
+            assertEquals("lastname" + i, record.readUTF("lastname"));
+            assertEquals(i, record.readDouble("doubleField"), 0.1);
+            assertEquals(i % 2 == 0, record.readBoolean("boolean"));
+        }
+        assertNull(map.get(ROW_COUNT + 1));
     }
 
     @Test
@@ -50,12 +54,15 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
         configureMap(client);
 
         IMap<Integer, Person> map = client.getMap("map");
-        var person = map.get(0);
-        assertEquals(0, person.getId());
-        assertEquals("name", person.getName());
-        assertEquals("lastname", person.getLastname());
-        assertEquals(1.5, person.getDoubleField(), 0.1);
-        assertTrue(person.isBooleanField());
+        for (int i = 0; i < ROW_COUNT; i++) {
+            var person = map.get(i);
+            assertEquals(i, person.getId());
+            assertEquals("name" + i, person.getName());
+            assertEquals("lastname" + i, person.getLastname());
+            assertEquals(i, person.getDoubleField(), 0.1);
+            assertEquals(i % 2 == 0, person.isBooleanField());
+        }
+        assertNull(map.get(ROW_COUNT + 1));
     }
 
     private void configureMap(HazelcastInstance client) {

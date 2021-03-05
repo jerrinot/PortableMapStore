@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,28 +25,31 @@ public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderT
     @Test
     public void load_smoke() {
         PortableMapLoader mapLoader = createPortableLoaderInstance();
-
-        GenericRecord record = mapLoader.load(0);
-        assertEquals(0, record.readInt("id"));
-        assertEquals("name", record.readUTF("name"));
-        assertEquals("lastname", record.readUTF("lastname"));
-        assertEquals(1.5, record.readDouble("doubleField"), 0.1);
-        assertTrue(record.readBoolean("boolean"));
+        for (int i = 0; i < ROW_COUNT; i++) {
+            GenericRecord record = mapLoader.load(i);
+            assertEquals(i, record.readInt("id"));
+            assertEquals("name" + i, record.readUTF("name"));
+            assertEquals("lastname" + i, record.readUTF("lastname"));
+            assertEquals(i, record.readDouble("doubleField"), 0.1);
+            assertEquals(i % 2 == 0, record.readBoolean("boolean"));
+        }
+        assertNull(mapLoader.load(ROW_COUNT + 1));
     }
 
     @Test
     public void loadAll_smoke() {
         PortableMapLoader mapLoader = createPortableLoaderInstance();
 
-        Map<Object, GenericRecord> loadedEntries = mapLoader.loadAll(Arrays.asList(0, 1, 2, 3, 4, 5));
-        assertEquals(1, loadedEntries.size());
-        GenericRecord record = loadedEntries.get(0);
-
-        assertEquals(0, record.readInt("id"));
-        assertEquals("name", record.readUTF("name"));
-        assertEquals("lastname", record.readUTF("lastname"));
-        assertEquals(1.5, record.readDouble("doubleField"), 0.1);
-        assertTrue(record.readBoolean("boolean"));
+        Map<Object, GenericRecord> loadedEntries = mapLoader.loadAll(Arrays.asList(-2, -1, 0, 1, 2, 3, 4, 5));
+        assertEquals(6, loadedEntries.size());
+        for (int i = 0; i < 6; i++) {
+            var record = loadedEntries.get(i);
+            assertEquals(i, record.readInt("id"));
+            assertEquals("name" + i, record.readUTF("name"));
+            assertEquals("lastname" + i, record.readUTF("lastname"));
+            assertEquals(i, record.readDouble("doubleField"), 0.1);
+            assertEquals(i % 2 == 0, record.readBoolean("boolean"));
+        }
     }
 
     @Test
@@ -53,9 +58,12 @@ public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderT
 
         Iterable<Object> keys = mapLoader.loadAllKeys();
         Iterator<Object> keyIter = keys.iterator();
-        assertTrue(keyIter.hasNext());
-        Object key = keyIter.next();
-        assertEquals(0, key);
+        for (int i = 0; i < ROW_COUNT; i++) {
+            assertTrue(keyIter.hasNext());
+            Object key = keyIter.next();
+            assertEquals(i, key);
+        }
+        assertFalse(keyIter.hasNext());
     }
 
     @NotNull

@@ -4,10 +4,11 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.sql.Connection;
 import java.util.Properties;
 
 public class BasePortableMapLoaderTest {
+    public static final int ROW_COUNT = 100;
+
     private static final String CREATE_TABLE = """
             CREATE TABLE map (
                 id          integer PRIMARY KEY,
@@ -17,7 +18,7 @@ public class BasePortableMapLoaderTest {
                 boolean     boolean
             )""";
 
-    private static final String INSERT_PERSON = "insert into map values (0, 'name', 'lastname', 1.5, true);";
+    private static final String INSERT_PERSON = "insert into map values (?, ?, ?, ?, ?);";
 
     @ClassRule
     public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:11.1")
@@ -27,9 +28,18 @@ public class BasePortableMapLoaderTest {
 
     @BeforeClass
     public static void prepareData() throws Exception {
-        Connection connection = postgres.createConnection("");
-        connection.prepareStatement(CREATE_TABLE).execute();
-        connection.prepareStatement(INSERT_PERSON).execute();
+        try (var connection = postgres.createConnection("")) {
+            connection.prepareStatement(CREATE_TABLE).execute();
+            var stmt = connection.prepareStatement(INSERT_PERSON);
+            for (int i = 0; i < ROW_COUNT; i++) {
+                stmt.setInt(1, i);
+                stmt.setString(2, "name" + i);
+                stmt.setString(3, "lastname" + i);
+                stmt.setDouble(4, i);
+                stmt.setBoolean(5, i % 2 == 0);
+                stmt.executeUpdate();
+            }
+        }
     }
 
     public static Properties createProps() {
