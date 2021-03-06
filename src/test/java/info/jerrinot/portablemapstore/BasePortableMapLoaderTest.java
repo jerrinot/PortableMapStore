@@ -1,5 +1,6 @@
 package info.jerrinot.portablemapstore;
 
+import info.jerrinot.portablemapstore.impl.connectivity.ConnectionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -17,17 +18,23 @@ public abstract class BasePortableMapLoaderTest {
     public static final int ROW_COUNT = 100;
     private static final String INSERT_PERSON = "insert into map values (?, ?, ?, ?, ?);";
 
-    @Parameterized.Parameter
+    @Parameterized.Parameter(0)
     public static SupportedDatabases database;
+
+    @Parameterized.Parameter(1)
+    public static ConnectionType connectionType;
 
     private JdbcDatabaseContainer<?> container;
 
-    @Parameterized.Parameters(name = "database:{0}")
+    @Parameterized.Parameters(name = "database:{0}, connectionType:{1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                {SupportedDatabases.POSTGRES},
-                {SupportedDatabases.MARIADB},
-                {SupportedDatabases.MSSQL}
+                {SupportedDatabases.POSTGRES, ConnectionType.HIKARI},
+                {SupportedDatabases.POSTGRES, ConnectionType.SIMPLE},
+                {SupportedDatabases.MARIADB, ConnectionType.HIKARI},
+                {SupportedDatabases.MARIADB, ConnectionType.SIMPLE},
+                {SupportedDatabases.MSSQL, ConnectionType.HIKARI},
+                {SupportedDatabases.MSSQL, ConnectionType.SIMPLE}
         });
     }
 
@@ -69,6 +76,7 @@ public abstract class BasePortableMapLoaderTest {
         props.setProperty("classId", "1");
         props.setProperty("COLUMN:doublecolumn=FIELD:doubleField", "");
         props.setProperty("COLUMN:booleancolumn=FIELD:boolean", "");
+        props.setProperty("poolType", connectionType.getKey());
         return props;
     }
 }

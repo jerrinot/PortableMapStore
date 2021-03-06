@@ -1,7 +1,6 @@
 package info.jerrinot.portablemapstore.impl.connectivity;
 
 import com.hazelcast.core.HazelcastException;
-import info.jerrinot.portablemapstore.impl.columnmapping.ConnectionProvider;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

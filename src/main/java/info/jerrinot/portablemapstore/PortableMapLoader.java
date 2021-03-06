@@ -7,8 +7,9 @@ import com.hazelcast.map.MapLoaderLifecycleSupport;
 import com.hazelcast.nio.serialization.GenericRecord;
 import info.jerrinot.portablemapstore.impl.columnmapping.ColumnFieldMappings;
 import info.jerrinot.portablemapstore.impl.columnmapping.MappingParser;
+import info.jerrinot.portablemapstore.impl.connectivity.ConnectionProvider;
+import info.jerrinot.portablemapstore.impl.connectivity.ConnectionProviderFactory;
 import info.jerrinot.portablemapstore.impl.connectivity.DbAccess;
-import info.jerrinot.portablemapstore.impl.connectivity.SimpleConnectionProvider;
 import info.jerrinot.portablemapstore.impl.dbmapper.ResultSetToEntryMap;
 import info.jerrinot.portablemapstore.impl.dbmapper.ResultSetToObjectList;
 import info.jerrinot.portablemapstore.impl.dbmapper.ResultSetToSingleObjectOrNull;
@@ -59,10 +60,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         findByKeysQuery = "select * from " + tableName + " where " + keyColumnName + " IN (%s)";
         findAllKeysQuery = "select " + keyColumnName + " from " + tableName;
 
-        String url = properties.getProperty("url");
-        String username = properties.getProperty("username");
-        String password = properties.getProperty("password");
-        var connectionProvider = new SimpleConnectionProvider(url, username, password);
+        ConnectionProvider connectionProvider = ConnectionProviderFactory.newProvider(properties);
         dbAccess = new DbAccess(connectionProvider);
 
         var factoryId = Integer.parseInt(properties.getProperty("factoryId"));
