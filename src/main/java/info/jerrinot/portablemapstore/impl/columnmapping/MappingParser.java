@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 public final class MappingParser {
     // COLUMN:NAME=FIELD:NAME
-    // TODO: allow numbers in column/field names
     private static final Pattern MAPPING_PATTERN = Pattern.compile("(\\w+:)(\\w+)(=)(\\w+:)(\\w+)");
 
     private MappingParser() {

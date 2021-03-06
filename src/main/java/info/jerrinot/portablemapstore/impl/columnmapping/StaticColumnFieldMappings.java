@@ -1,5 +1,7 @@
 package info.jerrinot.portablemapstore.impl.columnmapping;
 
+import com.hazelcast.config.InvalidConfigurationException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +35,13 @@ public final class StaticColumnFieldMappings implements ColumnFieldMappings {
         public Builder mapColumnToField(String columnName, String fieldName) {
             String currentField = column2field.put(columnName, fieldName);
             if (currentField != null) {
-                throw new IllegalStateException("Cannot add mapping from column " + columnName + " to field "
+                throw new InvalidConfigurationException("Cannot add mapping from column " + columnName + " to field "
                         + fieldName + " because there is already a mapping for this column to field " + currentField
                         + ". Check configuration of PortableMapLoader. There are probably duplicates;");
             }
             String currentColumn = field2column.put(fieldName, columnName);
             if (currentColumn != null) {
-                throw new IllegalStateException("Cannot add mapping from column " + columnName + " to field "
+                throw new InvalidConfigurationException("Cannot add mapping from column " + columnName + " to field "
                         + fieldName + " because this field is already mapped to a column " + currentColumn
                         + ". Check configuration of PortableMapLoader. There are probably duplicates;");
             }
