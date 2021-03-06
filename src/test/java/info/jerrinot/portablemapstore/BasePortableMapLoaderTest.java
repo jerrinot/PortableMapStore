@@ -18,15 +18,16 @@ public abstract class BasePortableMapLoaderTest {
     private static final String INSERT_PERSON = "insert into map values (?, ?, ?, ?, ?);";
 
     @Parameterized.Parameter
-    public static Databases database;
+    public static SupportedDatabases database;
 
     private JdbcDatabaseContainer container;
 
     @Parameterized.Parameters(name = "database:{0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                {Databases.POSTGRES},
-                {Databases.MYSQL},
+                {SupportedDatabases.POSTGRES},
+                {SupportedDatabases.MARIADB},
+                {SupportedDatabases.MSSQL}
         });
     }
 
