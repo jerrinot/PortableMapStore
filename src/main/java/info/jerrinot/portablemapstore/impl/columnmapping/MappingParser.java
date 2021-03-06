@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public final class MappingParser {
     // COLUMN:NAME=FIELD:NAME
-    private static final Pattern MAPPING_PATTERN = Pattern.compile("(COLUMN:)(\\w+)(=)(FIELD:)(\\w+)");
+    private static final Pattern MAPPING_PATTERN = Pattern.compile("(COLUMN:)(\\w+)(=FIELD:)(\\w+)");
 
     private MappingParser() {
 
@@ -20,7 +20,7 @@ public final class MappingParser {
                 continue;
             }
             var columnName = matcher.group(2);
-            var fieldName = matcher.group(5);
+            var fieldName = matcher.group(4);
             builder.mapColumnToField(columnName, fieldName);
         }
         return builder.build();

@@ -93,4 +93,13 @@ public class MappingParserTest {
         MappingParser.createMappings(props);
     }
 
+    @Test
+    public void testPropertyNameContainsExtraCharacter() {
+        var props = new Properties();
+        props.setProperty("COLUMN:COLUMNNAME=FIELD:FIELDNAME:", "");
+        var mapping = MappingParser.createMappings(props);
+
+        assertEquals("COLUMNNAME", mapping.columnToField("COLUMNNAME"));
+    }
+
 }
