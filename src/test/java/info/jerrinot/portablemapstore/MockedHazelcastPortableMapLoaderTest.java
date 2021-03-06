@@ -6,6 +6,8 @@ import com.hazelcast.nio.serialization.ClassDefinition;
 import com.hazelcast.nio.serialization.ClassDefinitionBuilder;
 import com.hazelcast.nio.serialization.GenericRecord;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -20,11 +22,24 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderTest {
+public final class MockedHazelcastPortableMapLoaderTest extends BasePortableMapLoaderTest {
+
+    private PortableMapLoader mapLoader;
+
+    @Before
+    public void setup() {
+        mapLoader = createPortableLoaderInstance();
+    }
+
+    @After
+    public void teardown() {
+        if (mapLoader != null) {
+            mapLoader.destroy();
+        }
+    }
 
     @Test
     public void load_smoke() {
-        PortableMapLoader mapLoader = createPortableLoaderInstance();
         for (int i = 0; i < ROW_COUNT; i++) {
             GenericRecord record = mapLoader.load(i);
             assertEquals(i, record.readInt("id"));

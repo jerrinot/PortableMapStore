@@ -23,12 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
-    private HazelcastInstance server;
-
+public final class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
     @Before
     public void setup() {
-        server = Hazelcast.newHazelcastInstance();
+        Hazelcast.newHazelcastInstance();
     }
 
     @After

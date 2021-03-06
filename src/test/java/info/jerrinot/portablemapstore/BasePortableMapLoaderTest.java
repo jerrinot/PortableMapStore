@@ -23,7 +23,6 @@ public abstract class BasePortableMapLoaderTest {
 
     @Parameterized.Parameter(1)
     public static PoolType poolType;
-
     private JdbcDatabaseContainer<?> container;
 
     @Parameterized.Parameters(name = "database:{0}, connectionType:{1}")
@@ -46,11 +45,18 @@ public abstract class BasePortableMapLoaderTest {
     }
 
     @Before
-    public void startContainerAndPrepareData() throws Exception {
+    public final void startContainerAndPrepareData() throws Exception {
         container = database.newContainer();
         container.start();
         try (var connection = container.createConnection("")) {
             prepareData(connection);
+        }
+    }
+
+    @After
+    public final void stopContainer() {
+        if (container != null) {
+            container.stop();
         }
     }
 
@@ -67,14 +73,7 @@ public abstract class BasePortableMapLoaderTest {
         }
     }
 
-    @After
-    public void stopContainer() {
-        if (container != null) {
-            container.stop();
-        }
-    }
-
-    public Properties createProps() {
+    public final Properties createProps() {
         var props = new Properties();
         props.setProperty("url", container.getJdbcUrl());
         props.setProperty("username", container.getUsername());
