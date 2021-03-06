@@ -2,15 +2,15 @@ package info.jerrinot.portablemapstore.impl.connectivity;
 
 import com.hazelcast.config.InvalidConfigurationException;
 
-public enum ConnectionType {
+public enum PoolType {
     SIMPLE("simple"),
     HIKARI("hikari");
 
-    private static final ConnectionType DEFAULT = SIMPLE;
+    private static final PoolType DEFAULT = SIMPLE;
 
     private final String key;
 
-    ConnectionType(String key) {
+    PoolType(String key) {
         this.key = key;
     }
 
@@ -18,11 +18,11 @@ public enum ConnectionType {
         return key;
     }
 
-    public static ConnectionType getByKey(String key) {
+    public static PoolType getByKey(String key) {
         if (key == null || key.isBlank()) {
             return DEFAULT;
         }
-        for (var type : ConnectionType.values()) {
+        for (var type : PoolType.values()) {
             if (type.getKey().equals(key)) {
                 return type;
             }

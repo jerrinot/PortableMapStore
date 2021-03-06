@@ -1,6 +1,6 @@
 package info.jerrinot.portablemapstore;
 
-import info.jerrinot.portablemapstore.impl.connectivity.ConnectionType;
+import info.jerrinot.portablemapstore.impl.connectivity.PoolType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -22,21 +22,21 @@ public abstract class BasePortableMapLoaderTest {
     public static SupportedDatabases database;
 
     @Parameterized.Parameter(1)
-    public static ConnectionType connectionType;
+    public static PoolType poolType;
 
     private JdbcDatabaseContainer<?> container;
 
     @Parameterized.Parameters(name = "database:{0}, connectionType:{1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                {SupportedDatabases.POSTGRES, ConnectionType.HIKARI},
-                {SupportedDatabases.POSTGRES, ConnectionType.SIMPLE},
-                {SupportedDatabases.MARIADB, ConnectionType.HIKARI},
-                {SupportedDatabases.MARIADB, ConnectionType.SIMPLE},
-                {SupportedDatabases.MSSQL, ConnectionType.HIKARI},
-                {SupportedDatabases.MSSQL, ConnectionType.SIMPLE},
-                {SupportedDatabases.DB2, ConnectionType.HIKARI},
-                {SupportedDatabases.DB2, ConnectionType.SIMPLE},
+                {SupportedDatabases.POSTGRES, PoolType.HIKARI},
+                {SupportedDatabases.POSTGRES, PoolType.SIMPLE},
+                {SupportedDatabases.MARIADB, PoolType.HIKARI},
+                {SupportedDatabases.MARIADB, PoolType.SIMPLE},
+                {SupportedDatabases.MSSQL, PoolType.HIKARI},
+                {SupportedDatabases.MSSQL, PoolType.SIMPLE},
+                {SupportedDatabases.DB2, PoolType.HIKARI},
+                {SupportedDatabases.DB2, PoolType.SIMPLE},
         });
     }
 
@@ -86,7 +86,7 @@ public abstract class BasePortableMapLoaderTest {
             props.setProperty("COLUMN:doublecolumn=FIELD:doubleField", "");
             props.setProperty("COLUMN:booleancolumn=FIELD:boolean", "");
         }
-        props.setProperty("poolType", connectionType.getKey());
+        props.setProperty("poolType", poolType.getKey());
         return props;
     }
 }
