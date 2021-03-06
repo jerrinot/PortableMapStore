@@ -33,6 +33,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
     private String findByKeyQuery;
     private String findByKeysQuery;
     private String findAllKeysQuery;
+    private ConnectionProvider connectionProvider;
 
     @Override
     public GenericRecord load(Object key) {
@@ -60,7 +61,7 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
         findByKeysQuery = "select * from " + tableName + " where " + keyColumnName + " IN (%s)";
         findAllKeysQuery = "select " + keyColumnName + " from " + tableName;
 
-        ConnectionProvider connectionProvider = ConnectionProviderFactory.newProvider(properties);
+        connectionProvider = ConnectionProviderFactory.newProvider(properties);
         dbAccess = new DbAccess(connectionProvider);
 
         var factoryId = Integer.parseInt(properties.getProperty("factoryId"));
@@ -83,6 +84,6 @@ public final class PortableMapLoader implements MapLoader<Object, GenericRecord>
 
     @Override
     public void destroy() {
-
+        connectionProvider.close();
     }
 }

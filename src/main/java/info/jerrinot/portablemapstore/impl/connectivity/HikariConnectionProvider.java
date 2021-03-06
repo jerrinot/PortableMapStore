@@ -26,4 +26,9 @@ public class HikariConnectionProvider implements ConnectionProvider {
             throw new HazelcastException(e);
         }
     }
+
+    @Override
+    public void close() {
+        ds.close();
+    }
 }
