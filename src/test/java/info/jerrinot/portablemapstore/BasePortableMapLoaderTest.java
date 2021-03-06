@@ -20,7 +20,7 @@ public abstract class BasePortableMapLoaderTest {
     @Parameterized.Parameter
     public static SupportedDatabases database;
 
-    private JdbcDatabaseContainer container;
+    private JdbcDatabaseContainer<?> container;
 
     @Parameterized.Parameters(name = "database:{0}")
     public static Collection<Object[]> data() {

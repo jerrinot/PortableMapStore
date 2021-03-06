@@ -15,7 +15,7 @@ enum SupportedDatabases {
                 lastname        varchar(40) NOT NULL,
                 doublecolumn    double precision,
                 booleancolumn   boolean
-            )""", () -> new PostgreSQLContainer("postgres:11.1")
+            )""", () -> new PostgreSQLContainer<>("postgres:11.1")
             .withDatabaseName("integration-tests-db")
             .withUsername("sa")
             .withPassword("sa")),
@@ -27,7 +27,7 @@ enum SupportedDatabases {
                 lastname        varchar(40) NOT NULL,
                 doublecolumn    double,
                 booleancolumn   boolean
-            )""", () -> new MariaDBContainer("mariadb:10.3.6")
+            )""", () -> new MariaDBContainer<>("mariadb:10.3.6")
             .withDatabaseName("integration-tests-db")
             .withPassword("sa")
             .withPassword("sa")),
@@ -38,14 +38,14 @@ enum SupportedDatabases {
                 lastname        varchar(40) NOT NULL,
                 doublecolumn    float,
                 booleancolumn   bit
-            )""", () -> new MSSQLServerContainer("mcr.microsoft.com/mssql/server:2017-CU12")
+            )""", () -> new MSSQLServerContainer<>("mcr.microsoft.com/mssql/server:2017-CU12")
             .acceptLicense()
     );
 
     private final String createTableQuery;
-    private final Supplier<JdbcDatabaseContainer> containerSupplier;
+    private final Supplier<JdbcDatabaseContainer<?>> containerSupplier;
 
-    SupportedDatabases(String createTableQuery, Supplier<JdbcDatabaseContainer> containerSupplier) {
+    SupportedDatabases(String createTableQuery, Supplier<JdbcDatabaseContainer<?>> containerSupplier) {
         this.createTableQuery = createTableQuery;
         this.containerSupplier = containerSupplier;
     }
@@ -54,7 +54,7 @@ enum SupportedDatabases {
         return createTableQuery;
     }
 
-    public JdbcDatabaseContainer newContainer() {
+    public JdbcDatabaseContainer<?> newContainer() {
         return containerSupplier.get();
     }
 }
