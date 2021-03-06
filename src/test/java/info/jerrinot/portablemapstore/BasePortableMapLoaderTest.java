@@ -28,6 +28,11 @@ public abstract class BasePortableMapLoaderTest {
 
     @Parameterized.Parameters(name = "database:{0}, connectionType:{1}")
     public static Collection<Object[]> data() {
+        if ("true".equals(System.getProperty("local-test"))) {
+            return Arrays.asList(new Object[][]{
+                    {SupportedDatabases.POSTGRES, PoolType.HIKARI}
+            });
+        }
         return Arrays.asList(new Object[][] {
                 {SupportedDatabases.POSTGRES, PoolType.HIKARI},
                 {SupportedDatabases.POSTGRES, PoolType.SIMPLE},
