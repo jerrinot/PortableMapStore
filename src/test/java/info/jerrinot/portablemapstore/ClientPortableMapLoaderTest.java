@@ -33,7 +33,9 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
 
     @After
     public void tearDown() {
-        server.shutdown();
+        if (server != null) {
+            server.shutdown();
+        }
     }
 
     @Test

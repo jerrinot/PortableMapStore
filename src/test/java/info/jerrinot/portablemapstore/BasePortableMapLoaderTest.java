@@ -34,7 +34,9 @@ public abstract class BasePortableMapLoaderTest {
                 {SupportedDatabases.MARIADB, ConnectionType.HIKARI},
                 {SupportedDatabases.MARIADB, ConnectionType.SIMPLE},
                 {SupportedDatabases.MSSQL, ConnectionType.HIKARI},
-                {SupportedDatabases.MSSQL, ConnectionType.SIMPLE}
+                {SupportedDatabases.MSSQL, ConnectionType.SIMPLE},
+                {SupportedDatabases.DB2, ConnectionType.HIKARI},
+                {SupportedDatabases.DB2, ConnectionType.SIMPLE},
         });
     }
 
@@ -74,8 +76,16 @@ public abstract class BasePortableMapLoaderTest {
         props.setProperty("password", container.getPassword());
         props.setProperty("factoryId", "1");
         props.setProperty("classId", "1");
-        props.setProperty("COLUMN:doublecolumn=FIELD:doubleField", "");
-        props.setProperty("COLUMN:booleancolumn=FIELD:boolean", "");
+        if (SupportedDatabases.DB2 == database) {
+            props.setProperty("COLUMN:ID=FIELD:id", "");
+            props.setProperty("COLUMN:NAME=FIELD:name", "");
+            props.setProperty("COLUMN:LASTNAME=FIELD:lastname", "");
+            props.setProperty("COLUMN:DOUBLECOLUMN=FIELD:doubleField", "");
+            props.setProperty("COLUMN:BOOLEANCOLUMN=FIELD:boolean", "");
+        } else {
+            props.setProperty("COLUMN:doublecolumn=FIELD:doubleField", "");
+            props.setProperty("COLUMN:booleancolumn=FIELD:boolean", "");
+        }
         props.setProperty("poolType", connectionType.getKey());
         return props;
     }

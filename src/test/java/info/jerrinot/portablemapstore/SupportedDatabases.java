@@ -1,5 +1,6 @@
 package info.jerrinot.portablemapstore;
 
+import org.testcontainers.containers.Db2Container;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.MariaDBContainer;
@@ -30,7 +31,18 @@ enum SupportedDatabases {
             )""", () -> new MariaDBContainer<>("mariadb:10.3.6")
             .withDatabaseName("integration-tests-db")
             .withPassword("sa")
-            .withPassword("sa")),
+            .withUsername("sa")),
+    DB2("""
+            CREATE TABLE map (
+                id              integer PRIMARY KEY NOT NULL,
+                name            varchar(40) NOT NULL,
+                lastname        varchar(40) NOT NULL,
+                doublecolumn    double,
+                booleancolumn   boolean
+            )""", () -> new Db2Container("ibmcom/db2:11.5.0.0a")
+            .acceptLicense()
+            .withPassword("sa")
+            .withUsername("sa")),
     MSSQL("""
             CREATE TABLE map (
                 id              int PRIMARY KEY,
