@@ -33,9 +33,8 @@ public class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest {
 
     @After
     public void tearDown() {
-        if (server != null) {
-            server.shutdown();
-        }
+        HazelcastClient.shutdownAll();
+        Hazelcast.shutdownAll();
     }
 
     @Test
