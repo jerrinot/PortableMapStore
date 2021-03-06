@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public final class MappingParser {
     // COLUMN:NAME=FIELD:NAME
-    private static final Pattern MAPPING_PATTERN = Pattern.compile("(\\w+:)(\\w+)(=)(\\w+:)(\\w+)");
+    private static final Pattern MAPPING_PATTERN = Pattern.compile("(COLUMN:)(\\w+)(=)(FIELD:)(\\w+)");
 
     private MappingParser() {
 
@@ -14,12 +14,7 @@ public final class MappingParser {
 
     public static ColumnFieldMappings createMappings(Properties props) {
         StaticColumnFieldMappings.Builder builder = ColumnFieldMappings.newBuilder();
-        for (var entry : props.entrySet()) {
-            var keyObject = entry.getKey();
-            if (!(keyObject instanceof String)) {
-                continue;
-            }
-            String key = (String) keyObject;
+        for (var key : props.stringPropertyNames()) {
             Matcher matcher = MAPPING_PATTERN.matcher(key);
             if (!matcher.matches()) {
                 continue;
