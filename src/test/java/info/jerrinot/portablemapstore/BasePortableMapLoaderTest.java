@@ -27,7 +27,7 @@ public abstract class BasePortableMapLoaderTest {
 
     @Parameterized.Parameters(name = "database:{0}, connectionType:{1}")
     public static Collection<Object[]> data() {
-        if ("true".equals(System.getProperty("local-test"))) {
+        if (runQuickTestsOnly()) {
             return Arrays.asList(new Object[][]{
                     {SupportedDatabases.POSTGRES, PoolType.HIKARI}
             });
@@ -42,6 +42,10 @@ public abstract class BasePortableMapLoaderTest {
                 {SupportedDatabases.DB2, PoolType.HIKARI},
                 {SupportedDatabases.DB2, PoolType.SIMPLE},
         });
+    }
+
+    static boolean runQuickTestsOnly() {
+        return ("true".equals(System.getProperty("local-test")));
     }
 
     @Before

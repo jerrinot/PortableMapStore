@@ -32,6 +32,7 @@ enum SupportedDatabases {
             .withDatabaseName("integration-tests-db")
             .withPassword("sa")
             .withUsername("sa")),
+
     DB2("""
             CREATE TABLE map (
                 id              integer PRIMARY KEY NOT NULL,
@@ -43,6 +44,7 @@ enum SupportedDatabases {
             .acceptLicense()
             .withPassword("sa")
             .withUsername("sa")),
+
     MSSQL("""
             CREATE TABLE map (
                 id              int PRIMARY KEY,

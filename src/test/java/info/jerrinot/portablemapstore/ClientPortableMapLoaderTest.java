@@ -27,6 +27,10 @@ public final class ClientPortableMapLoaderTest extends BasePortableMapLoaderTest
     @Before
     public void setup() {
         Hazelcast.newHazelcastInstance();
+        if (!runQuickTestsOnly()) {
+            // creating real clusters is slow
+            Hazelcast.newHazelcastInstance();
+        }
     }
 
     @After
